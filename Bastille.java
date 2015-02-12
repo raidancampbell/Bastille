@@ -15,11 +15,36 @@ public class Bastille {
     public static void main(String[] args){
         String[] macs = trimResults(makeIPs());
     }
+    
+    public static String[] formatMAC (String[] input){
+        ArrayList<String> returnVar = new ArrayList<String>();
+        
+        for(String s: input){
+            if(s.startsWith("tmp")){
+                StringBuilder temp = new StringBuilder(s.substring(2));
+                StringBuilder returnBuilder = new StringBuilder();
+                String prefix = "";
+                int index = 0;
+                while (index < temp.length())
+                {
+                    returnBuilder.append(prefix);
+                    prefix = ":";
+                    returnBuilder.append(temp.substring(index,
+                            Math.min(index + 2, temp.length())));
+                    index += 2;
+                }
+                //TODO: check for a trailing addition
+                returnVar.add(returnBuilder.toString());
+            }
+        }
+        
+        return returnVar.toArray(new String[returnVar.size()]);
+    }
 
     /**
      * 
      * executes Soldier to get the hostnames
-     * @return
+     * @return newline-split array of output
      */
     public static String[] makeIPs(){
         ArrayList<String> commands = new ArrayList<String>();
@@ -46,8 +71,8 @@ public class Bastille {
 
     /**
      * returns only the lines containing the desired tmp\W{12} hostname 
-     * @param input
-     * @return
+     * @param input output of makeIPs
+     * @return strings that match the regex
      */
     public static String[] trimResults(String[] input){
         ArrayList<String> returnVar = new ArrayList<String>();
