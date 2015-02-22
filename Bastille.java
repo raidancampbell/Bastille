@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -13,7 +14,20 @@ import java.util.regex.Pattern;
  */
 public class Bastille {
     public static void main(String[] args){
-        String[] macs = trimResults(makeIPs());
+        String[] macs = formatMAC(trimResults(makeIPs()));
+        writeToFile(flatten(macs), "macs");
+        
+    }
+
+    /**
+     * you give me a string array, I give you a single string, flattened with newlines
+     * @param input a string array
+     * @return a single newline-delimited string
+     */
+    public static String flatten(String[] input){
+        StringBuilder returnVar = new StringBuilder();
+        for(String s: input) returnVar.append(String.format("%s\n", s));
+        return returnVar.toString();
     }
     
     public static String[] formatMAC (String[] input){
@@ -37,7 +51,6 @@ public class Bastille {
                 returnVar.add(returnBuilder.toString());
             }
         }
-        
         return returnVar.toArray(new String[returnVar.size()]);
     }
 
@@ -83,5 +96,16 @@ public class Bastille {
             if(matcher.find()) returnVar.add(matcher.group(1));
         }
         return returnVar.toArray(new String[returnVar.size()]);
+    }
+    
+    public static void writeToFile(String toWrite, String fileName){
+        try {
+            byte[] data = toWrite.getBytes();
+            FileOutputStream outputStream = new FileOutputStream(fileName);
+            outputStream.write(data);
+        } catch(Exception e){
+            System.err.println("Error while writing to file '"+fileName+"'!");
+        }
+        
     }
 }
