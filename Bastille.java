@@ -31,11 +31,11 @@ public class Bastille {
     }
     
     public static String[] formatMAC (String[] input){
-        ArrayList<String> returnVar = new ArrayList<String>();
+        ArrayList<String> returnVar = new ArrayList<>();
         
         for(String s: input){
             if(s.startsWith("tmp")){
-                StringBuilder temp = new StringBuilder(s.substring(2));
+                StringBuilder temp = new StringBuilder(s.substring(3));
                 StringBuilder returnBuilder = new StringBuilder();
                 String prefix = "";
                 int index = 0;
@@ -60,8 +60,8 @@ public class Bastille {
      * @return newline-split array of output
      */
     public static String[] makeIPs(){
-        ArrayList<String> commands = new ArrayList<String>();
-        commands.add("sudo");
+        ArrayList<String> commands = new ArrayList<>();
+        commands.add("sudo");//gotta run it as root to resolve the IPs
         commands.add("sh");
         commands.add("./Soldier.sh");
         
@@ -88,16 +88,21 @@ public class Bastille {
      * @return strings that match the regex
      */
     public static String[] trimResults(String[] input){
-        ArrayList<String> returnVar = new ArrayList<String>();
-        Pattern pattern = Pattern.compile("(tmp\\W)");
+        ArrayList<String> returnVar = new ArrayList<>();
+        Pattern pattern = Pattern.compile("tmp[0-9a-f]+");
         for(String s: input){
             //valid is tmp, followed by 12 non-whitespace characters
             Matcher matcher = pattern.matcher(s);
-            if(matcher.find()) returnVar.add(matcher.group(1));
+            if(matcher.find()) returnVar.add(matcher.group(0));
         }
         return returnVar.toArray(new String[returnVar.size()]);
     }
-    
+
+    /**
+     * you give me text, and a filename.  I write the text under that filename
+     * @param toWrite text to write
+     * @param fileName filename to write to
+     */
     public static void writeToFile(String toWrite, String fileName){
         try {
             byte[] data = toWrite.getBytes();
