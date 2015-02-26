@@ -16,7 +16,7 @@ public class Soldier implements Runnable{
         this.thirdAddrUB = UB;
     }
 
-    public String run() {
+    public void run() {
         String firstSection = "129.22";
         int fourthAddr = 0;
         ArrayList<String> returnVar = new ArrayList<>();
@@ -29,7 +29,7 @@ public class Soldier implements Runnable{
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
         Bastille.formatMAC(returnArr);
-        return Bastille.flatten(returnArr);
+        //return Bastille.flatten(returnArr);
     }
     
     
