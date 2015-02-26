@@ -16,7 +16,6 @@ public class Bastille {
     public static void main(String[] args){
         String[] macs = formatMAC(trimResults(makeIPs()));
         writeToFile(flatten(macs), "macs");
-        
     }
 
     /**
@@ -47,7 +46,6 @@ public class Bastille {
                             Math.min(index + 2, temp.length())));
                     index += 2;
                 }
-                //TODO: check for a trailing addition
                 returnVar.add(returnBuilder.toString());
             }
         }
@@ -64,6 +62,12 @@ public class Bastille {
         commands.add("sudo");//gotta run it as root to resolve the IPs
         commands.add("sh");
         commands.add("./Soldier.sh");
+        commands.add("|");
+        commands.add("grep");
+        commands.add("name");
+        commands.add("|");
+        commands.add("tee");
+        commands.add("resolutions.bs");
         
         try {
             Process pr = Runtime.getRuntime().exec(commands.toArray(new String[commands.size()]));
