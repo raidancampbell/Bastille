@@ -2,10 +2,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
-/**
- * Created by aidan on 2/25/15.
- */
 public class Soldier implements Runnable{
     
     private int thirdAddrLB;
@@ -25,7 +23,7 @@ public class Soldier implements Runnable{
         for(;thirdAddrLB<thirdAddrUB;thirdAddrLB++){
             for(fourthAddr = 0;fourthAddr<256;fourthAddr++){
                 String[] lookupValue = nslookupIP(String.format("%s.%d.%d",firstSection , thirdAddrLB, fourthAddr));
-                for(int i = 0; i<lookupValue.length;i++)returnVar.add(lookupValue[i]);//yay, O(n) runtime!
+                Collections.addAll(returnVar, lookupValue);
             }
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);

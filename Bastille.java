@@ -16,7 +16,7 @@ public class Bastille {
         String[] existingMacs = readFile();
         if(existingMacs == null) {//we haven't made them yet.
             //make them, and the last thread will pick up from there
-            Prisoner sharedData = deploySoldiers(8);//divide namespace resolution into 8 threads
+            deploySoldiers(8);//divide namespace resolution into 8 threads
         } else {
             getRandomElementFrom(existingMacs);
             System.out.println(getRandomElementFrom(existingMacs));
@@ -104,10 +104,12 @@ public class Bastille {
         try {
             byte[] buffer = new byte[(int) new File(filename).length()];
             BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
-            f.read(buffer);
+            int status = f.read(buffer);
+            if(status == -1) throw new IOException("READ STATUS RETURNED -1");
             return new String(buffer).split("\\n");//newline split the stuff.
         } catch (IOException e){
             System.err.println(String.format("ERROR WHILE READING FROM FILE %s", filename));
+            e.printStackTrace();
         }
         return null;
     }
