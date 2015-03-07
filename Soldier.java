@@ -10,15 +10,17 @@ public class Soldier implements Runnable{
     
     private int thirdAddrLB;
     private int thirdAddrUB;
+    private Prisoner sharedData;
     
-    public Soldier(int LB, int UB){
+    public Soldier(int LB, int UB, Prisoner sharedData){
         this.thirdAddrLB = LB;
         this.thirdAddrUB = UB;
+        this.sharedData = sharedData;
     }
 
     public void run() {
         String firstSection = "129.22";
-        int fourthAddr = 0;
+        int fourthAddr;
         ArrayList<String> returnVar = new ArrayList<>();
         for(;thirdAddrLB<thirdAddrUB;thirdAddrLB++){
             for(fourthAddr = 0;fourthAddr<256;fourthAddr++){
@@ -29,7 +31,7 @@ public class Soldier implements Runnable{
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
         Bastille.formatMAC(returnArr);
-        //return Bastille.flatten(returnArr);
+        sharedData.addMACS(returnArr);
     }
     
     

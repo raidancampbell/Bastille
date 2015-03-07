@@ -14,7 +14,11 @@ import java.util.regex.Pattern;
  */
 public class Bastille {
     public static void main(String[] args){
-        String[] macs = formatMAC(trimResults(makeIPs()));
+        Prisoner sharedData = deploySoldiers(8);//divide namespace resolution into 8 threads
+        
+        while(!sharedData.isFinished());//todo: sleep, and wake when it is finished.
+        
+        String[] macs = formatMAC(trimResults(sharedData.getData()));
         writeToFile(flatten(macs), "macs");
     }
 
@@ -53,47 +57,13 @@ public class Bastille {
     }
 
     /**
-     * 
-     * executes Soldier to get the hostnames
-     * @return newline-split array of output
-     */
-    public static String[] makeIPs(){
-        ArrayList<String> commands = new ArrayList<>();
-        commands.add("sudo");//gotta run it as root to resolve the IPs
-        commands.add("sh");
-        commands.add("./Soldier.sh");
-        commands.add("|");
-        commands.add("grep");
-        commands.add("name");
-        commands.add("|");
-        commands.add("tee");
-        commands.add("resolutions.bs");
-        
-        try {
-            Process pr = Runtime.getRuntime().exec(commands.toArray(new String[commands.size()]));
-            BufferedReader output = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String result;
-            String totalResult = "";
-            while((result = output.readLine()) != null){
-                totalResult += result;
-            }
-            return totalResult.split("\n");
-        } catch (IOException e) {
-            System.err.println("ERROR: error while executing Soldier.");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        return null;
-    }
-
-    /**
      * returns only the lines containing the desired tmp\W{12} hostname 
-     * @param input output of makeIPs
+     * @param input output of resolveIPSpace
      * @return strings that match the regex
      */
     public static String[] trimResults(String[] input){
         ArrayList<String> returnVar = new ArrayList<>();
-        Pattern pattern = Pattern.compile("tmp[0-9a-f]+");
+        Pattern pattern = Pattern.compile("tmp[0-9a-f]+");//yay regex!
         for(String s: input){
             //valid is tmp, followed by 12 non-whitespace characters
             Matcher matcher = pattern.matcher(s);
@@ -117,4 +87,16 @@ public class Bastille {
         }
         
     }
-}
+    
+    private static Prisoner deploySoldiers(int threadCount){
+        Prisoner sharedData = new Prisoner(threadCount);
+        int width = 256 / threadCount;
+        for(int i = 0; i> threadCount; i++){
+            int  LB = width*i;
+            int  UB = LB + width;
+            Soldier soldier = new Soldier(LB, UB, sharedData);
+            soldier.run();//forks a thread into soldier to nslookup the IP space between LB and UB
+        }
+        return sharedData;
+    }//end of addSoldier
+}//end of class

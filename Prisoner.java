@@ -16,11 +16,17 @@ public class Prisoner {
         for(String s: macs)newMacs.add(s);//yes, this is a manual array copy.  I'll fix it soon
         for(String s: toAdd)newMacs.add(s);//TODO: fix it soon.
         this.macs = newMacs.toArray(new String[newMacs.size()]);
-        
         numberFinished--;
         if(numberFinished == 0){
             //call Bastille to start.
         }
+    }
+    
+    public boolean isFinished(){ return numberFinished == 0;}
+    
+    public String[] getData(){
+        return this.macs;
+        
     }
     
 
