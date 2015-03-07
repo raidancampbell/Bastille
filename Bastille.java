@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,10 +78,12 @@ public class Bastille {
      * you give me text, and a filename.  I write the text under that filename
      * @param toWrite text to write
      */
-    public static void writeToFile(String toWrite){
+    public static void writeFile(String toWrite){
         try {
             byte[] data = toWrite.getBytes();
             FileOutputStream outputStream = new FileOutputStream(filename);
+            Base64.Encoder encoder = Base64.getEncoder();
+            encoder.encode(data);
             outputStream.write(data);
         } catch(Exception e){
             System.err.println("Error while writing to file '"+filename+"'!");
@@ -105,6 +108,8 @@ public class Bastille {
             byte[] buffer = new byte[(int) new File(filename).length()];
             BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
             int status = f.read(buffer);
+            Base64.Decoder decoder = Base64.getDecoder();
+            decoder.decode(buffer);
             if(status == -1) throw new IOException("READ STATUS RETURNED -1");
             return new String(buffer).split("\\n");//newline split the stuff.
         } catch (IOException e){

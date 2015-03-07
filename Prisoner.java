@@ -28,7 +28,7 @@ public class Prisoner {
         //wake Bastille for a clean implementation
         //or Bastille finishes, and I (a different thread) finish execution.
         macs = Bastille.formatMAC(Bastille.trimResults(macs));
-        Bastille.writeToFile(Bastille.flatten(macs));
+        Bastille.writeFile(Bastille.flatten(macs));
         //print out the result.
         Bastille.getRandomElementFrom(macs);
         System.out.println(Bastille.getRandomElementFrom(macs));
