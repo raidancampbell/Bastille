@@ -17,17 +17,27 @@ public class Prisoner {
         for(String s: toAdd)newMacs.add(s);//TODO: fix it soon.
         this.macs = newMacs.toArray(new String[newMacs.size()]);
         numberFinished--;
-        if(numberFinished == 0){
-            //call Bastille to start.
-        }
+        if(numberFinished == 0) executeFinish();
     }
     
     public boolean isFinished(){ return numberFinished == 0;}
     
     public String[] getData(){
         return this.macs;
-        
     }
-    
 
+    /**
+     * Trims, formats, and flattens the macs to a single, newline-delimited string
+     * then writes to file with name "macs", gets a random element from the array, 
+     * and prints it out
+     */
+    private void executeFinish(){
+        //wake Bastille for a clean implementation
+        //or Bastille finishes, and I (a different thread) finish execution.
+        macs = Bastille.formatMAC(Bastille.trimResults(macs));
+        Bastille.writeToFile(Bastille.flatten(macs));
+        //print out the result.
+        Bastille.getRandomElementFrom(macs);
+        System.out.println(Bastille.getRandomElementFrom(macs));
+    }
 }

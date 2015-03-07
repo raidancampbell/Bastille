@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,13 +10,17 @@ import java.util.regex.Pattern;
  * that are owned in our block
  */
 public class Bastille {
+    private static final String filename = "macs";
+    
     public static void main(String[] args){
-        Prisoner sharedData = deploySoldiers(8);//divide namespace resolution into 8 threads
-        
-        while(!sharedData.isFinished());//todo: sleep, and wake when it is finished.
-        
-        String[] macs = formatMAC(trimResults(sharedData.getData()));
-        writeToFile(flatten(macs), "macs");
+        String[] existingMacs = readFile();
+        if(existingMacs == null) {//we haven't made them yet.
+            //make them, and the last thread will pick up from there
+            Prisoner sharedData = deploySoldiers(8);//divide namespace resolution into 8 threads
+        } else {
+            getRandomElementFrom(existingMacs);
+            System.out.println(getRandomElementFrom(existingMacs));
+        }
     }
 
     /**
@@ -75,15 +76,14 @@ public class Bastille {
     /**
      * you give me text, and a filename.  I write the text under that filename
      * @param toWrite text to write
-     * @param fileName filename to write to
      */
-    public static void writeToFile(String toWrite, String fileName){
+    public static void writeToFile(String toWrite){
         try {
             byte[] data = toWrite.getBytes();
-            FileOutputStream outputStream = new FileOutputStream(fileName);
+            FileOutputStream outputStream = new FileOutputStream(filename);
             outputStream.write(data);
         } catch(Exception e){
-            System.err.println("Error while writing to file '"+fileName+"'!");
+            System.err.println("Error while writing to file '"+filename+"'!");
         }
         
     }
@@ -99,4 +99,21 @@ public class Bastille {
         }
         return sharedData;
     }//end of addSoldier
+    
+    public static String[] readFile(){
+        try {
+            byte[] buffer = new byte[(int) new File(filename).length()];
+            BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
+            f.read(buffer);
+            return new String(buffer).split("\\n");//newline split the stuff.
+        } catch (IOException e){
+            System.err.println(String.format("ERROR WHILE READING FROM FILE %s", filename));
+        }
+        return null;
+    }
+    
+    public static String getRandomElementFrom(String[] array){
+        if(array == null) return null;
+        return array[(int) (Math.random()*array.length)];
+    }
 }//end of class
