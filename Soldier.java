@@ -6,9 +6,10 @@ import java.util.Collections;
 
 public class Soldier implements Runnable{
     
+    private static final String CWRUBlock = "129.22";
     private int thirdAddrLB;
     private int thirdAddrUB;
-    private Prisoner sharedData;
+    final private Prisoner sharedData;
     
     public Soldier(int LB, int UB, Prisoner sharedData){
         this.thirdAddrLB = LB;
@@ -17,19 +18,20 @@ public class Soldier implements Runnable{
     }
 
     public void run() {
-        String firstSection = "129.22";
         int fourthAddr;
         ArrayList<String> returnVar = new ArrayList<>();
         for(;thirdAddrLB<thirdAddrUB;thirdAddrLB++){
             for(fourthAddr = 0;fourthAddr<256;fourthAddr++){
-                String[] lookupValue = nslookupIP(String.format("%s.%d.%d",firstSection , thirdAddrLB, fourthAddr));
+                String[] lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
                 Collections.addAll(returnVar, lookupValue);
             }
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
         Bastille.formatMAC(returnArr);
-        sharedData.addMACS(returnArr);
+        synchronized (sharedData) {
+            sharedData.addMACS(returnArr);
+        }
     }
     
     

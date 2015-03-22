@@ -5,9 +5,11 @@ import java.util.Collections;
 public class Prisoner {
     private volatile String[] macs;
     private int numberFinished;
+    private int totalNumber;
     
     public Prisoner(int n){
         this.numberFinished = n;
+        this.totalNumber = n;
     }
     
     public void addMACS(String[] toAdd){
@@ -16,6 +18,7 @@ public class Prisoner {
         Collections.addAll(newMacs, toAdd);
         this.macs = newMacs.toArray(new String[newMacs.size()]);
         numberFinished--;
+        System.out.println(((double)numberFinished/(double)totalNumber)*100+"% complete");
         if(numberFinished == 0) executeFinish();
     }
     
