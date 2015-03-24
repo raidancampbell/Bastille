@@ -10,6 +10,7 @@ public class Soldier implements Runnable{
     
     private static final String CWRUBlock = "129.22";
     private int thirdAddrLB;
+    private final int startLB;
     private int thirdAddrUB;
     final private Prisoner sharedData;
     
@@ -17,6 +18,7 @@ public class Soldier implements Runnable{
         this.thirdAddrLB = LB;
         this.thirdAddrUB = UB;
         this.sharedData = sharedData;
+        this.startLB = LB;
     }
 
     public void run() {
@@ -27,7 +29,7 @@ public class Soldier implements Runnable{
                 String lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
                 if(lookupValue !=null) Collections.addAll(returnVar, lookupValue);
             }
-            System.out.println(((double)thirdAddrLB/thirdAddrUB)*100+"% complete with resolutions on this thread.");
+            System.out.println(percentComplete()*100+"% complete with resolutions on this thread.");
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
@@ -46,13 +48,22 @@ public class Soldier implements Runnable{
         }
         String hostname = null;
         try {
+            Thread.sleep(500l);
             hostname =  InetAddress.getByAddress(ipByte).getHostName();
             if(hostname.equals(ip)) throw new UnknownHostException();
             System.out.println(ip+" was found with hostname "+hostname);
         }catch (UnknownHostException e){
+            hostname = null;
             //System.err.println("Error, IP: "+ip+" has an unknown host.");
+        } catch(InterruptedException e){
+            hostname = null;
         }
-        
         return hostname;
+    }
+    
+    private double percentComplete(){
+        int range = thirdAddrUB - startLB;
+        int currentPosition = thirdAddrUB-thirdAddrLB;
+        return currentPosition / range;
     }
 }
