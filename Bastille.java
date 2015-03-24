@@ -94,7 +94,7 @@ public class Bastille {
     private static Prisoner deploySoldiers(int threadCount){
         Prisoner sharedData = new Prisoner(threadCount);
         int width = 256 / threadCount;
-        for(int i = 0; i> threadCount; i++){
+        for(int i = 0; i < threadCount; i++){
             int  LB = width*i;
             int  UB = LB + width;
             Soldier soldier = new Soldier(LB, UB, sharedData);
@@ -112,7 +112,9 @@ public class Bastille {
             decoder.decode(buffer);
             if(status == -1) throw new IOException("READ STATUS RETURNED -1");
             return new String(buffer).split("\\n");//newline split the stuff.
-        } catch (IOException e){
+        } catch (FileNotFoundException e){
+            return null;
+        } catch(IOException e){
             System.err.println(String.format("ERROR WHILE READING FROM FILE %s", filename));
             e.printStackTrace();
         }

@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -22,8 +24,8 @@ public class Soldier implements Runnable{
         ArrayList<String> returnVar = new ArrayList<>();
         for(;thirdAddrLB<thirdAddrUB;thirdAddrLB++){
             for(fourthAddr = 0;fourthAddr<256;fourthAddr++){
-                String[] lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
-                Collections.addAll(returnVar, lookupValue);
+                String lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
+                if(lookupValue !=null) Collections.addAll(returnVar, lookupValue);
             }
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
@@ -35,25 +37,21 @@ public class Soldier implements Runnable{
     }
     
     
-    private String[] nslookupIP(String ip){
-        ArrayList<String> commands = new ArrayList<>();
-        commands.add("sudo");//gotta run it as root to resolve the IPs
-        commands.add("nslookup");
-        commands.add(ip);
-        
+    private String nslookupIP(String ip){
+        byte[] ipByte = new byte[4];
+        String[] stringByte = ip.split("\\.");
+        for(int i = 0; i< stringByte.length; i++){
+            ipByte[i] = (byte) Integer.parseInt(stringByte[i]); //lots of unsafe casting :/
+        }
+        String hostname = null;
         try {
-            Process pr = Runtime.getRuntime().exec(commands.toArray(new String[commands.size()]));
-            BufferedReader output = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String result;
-            String totalResult = "";
-            while ((result = output.readLine()) != null) totalResult += result;
-            return totalResult.split("\n");//here's the return point
+            hostname =  InetAddress.getByAddress(ipByte).getHostName();
+            if(hostname.equals(ip)) throw new UnknownHostException();
+            System.out.println(ip+" was found with hostname "+hostname);
+        }catch (UnknownHostException e){
+            System.err.println("Error, IP: "+ip+" has an unknown host.");
         }
-        catch(IOException e) {
-            System.err.println("ERROR: error while executing Soldier.");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        return null;
+        
+        return hostname;
     }
 }
