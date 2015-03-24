@@ -27,6 +27,7 @@ public class Soldier implements Runnable{
                 String lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
                 if(lookupValue !=null) Collections.addAll(returnVar, lookupValue);
             }
+            System.out.println((double)thirdAddrUB/thirdAddrLB+"% complete with resolutions on this thread.");
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
@@ -49,7 +50,7 @@ public class Soldier implements Runnable{
             if(hostname.equals(ip)) throw new UnknownHostException();
             System.out.println(ip+" was found with hostname "+hostname);
         }catch (UnknownHostException e){
-            System.err.println("Error, IP: "+ip+" has an unknown host.");
+            //System.err.println("Error, IP: "+ip+" has an unknown host.");
         }
         
         return hostname;

@@ -1,25 +1,23 @@
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 
 
 public class Prisoner {
-    private volatile String[] macs;
-    private int numberFinished;
+    private volatile ArrayList<String> macs;
+    private int threadsRemaining;
     private int totalNumber;
     
     public Prisoner(int n){
-        this.numberFinished = n;
+        this.threadsRemaining = n;
         this.totalNumber = n;
+        macs = new ArrayList<>();
     }
     
     public void addMACS(String[] toAdd){
-        ArrayList<String> newMacs = new ArrayList<>();
-        Collections.addAll(newMacs, macs);
-        Collections.addAll(newMacs, toAdd);
-        this.macs = newMacs.toArray(new String[newMacs.size()]);
-        numberFinished--;
-        System.out.println(((double)numberFinished/(double)totalNumber)*100+"% complete");
-        if(numberFinished == 0) executeFinish();
+        this.macs.addAll(new ArrayList<>(Arrays.asList(toAdd)));
+        threadsRemaining--;
+        System.out.println(((double) threadsRemaining /(double)totalNumber)*100+"% complete");
+        if(threadsRemaining == 0) executeFinish();
     }
     
     /**
@@ -30,10 +28,9 @@ public class Prisoner {
     private void executeFinish(){
         //wake Bastille for a clean implementation
         //or Bastille finishes, and I (a different thread) finish execution.
-        macs = Bastille.formatMAC(Bastille.trimResults(macs));
-        Bastille.writeFile(Bastille.flatten(macs));
+        String[] macArray = macs.toArray(new String[macs.size()]);
+        Bastille.writeFile(Bastille.flatten(macArray));
         //print out the result.
-        Bastille.getRandomElementFrom(macs);
-        System.out.println(Bastille.getRandomElementFrom(macs));
+        System.out.println(Bastille.getRandomElementFrom(macArray));
     }
 }
