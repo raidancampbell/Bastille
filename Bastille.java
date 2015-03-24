@@ -98,7 +98,8 @@ public class Bastille {
             int  LB = width*i;
             int  UB = LB + width;
             Soldier soldier = new Soldier(LB, UB, sharedData);
-            soldier.run();//forks a thread into soldier to nslookup the IP space between LB and UB
+            new Thread(soldier).start();
+            //soldier.run();//forks a thread into soldier to nslookup the IP space between LB and UB
         }
         return sharedData;
     }//end of addSoldier

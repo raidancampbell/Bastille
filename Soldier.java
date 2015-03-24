@@ -27,7 +27,7 @@ public class Soldier implements Runnable{
                 String lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
                 if(lookupValue !=null) Collections.addAll(returnVar, lookupValue);
             }
-            System.out.println((double)thirdAddrUB/thirdAddrLB+"% complete with resolutions on this thread.");
+            System.out.println(((double)thirdAddrLB/thirdAddrUB)*100+"% complete with resolutions on this thread.");
         }
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
         Bastille.trimResults(returnArr);
