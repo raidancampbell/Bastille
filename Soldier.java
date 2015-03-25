@@ -6,11 +6,11 @@ import java.util.Collections;
 public class Soldier implements Runnable{
     
     private static final String CWRUBlock = "129.22";//the IP block belonging to CWRU
-    private int thirdAddrLB;
-    private final int startLB;
-    private int thirdAddrUB;
-    final private Prisoner sharedData;
-    private final int threadNumber;
+    private int thirdAddrLB;//129.22.***.0, the lower bound for the *** section (incremented towards UB)
+    private final int startLB;//129.22.***.0, the lower bound for the *** section (constant)
+    private int thirdAddrUB;//129.22.***.0, the upper bound for the *** section
+    final private Prisoner sharedData;//the shared data used between the threads
+    private final int threadNumber;//the unique ID number of this thread, by default a number between 0 and 7
 
     /**
      * Constructor.  Gotta make me before you run me.
@@ -77,6 +77,7 @@ public class Soldier implements Runnable{
         }catch (UnknownHostException e){
             hostname = null;
         } catch(InterruptedException e){
+            System.err.println("An error occurred while sleeping\nignoring...");
             hostname = null;
         }
         return hostname;

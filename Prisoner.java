@@ -7,10 +7,10 @@ import java.util.Arrays;
     will trigger some cleanup and finishing execution stuff to occur.
  */
 public class Prisoner {
-    private volatile ArrayList<String> macs;
-    private int threadsRemaining;
+    private volatile ArrayList<String> macs;//current arrayList of uncleansed MAC addresses
+    private int threadsRemaining;//number of threads that haven't finished execution
     private final double totalThreads;//holds an int, but rendered as double for fraction usage.
-    private double[] threadCompletionAmounts;
+    private double[] threadCompletionAmounts;//index-aligned completion amount for each worker thread
     
     //constructor.  Just feed me the number of threads, so I can know when we're done.
     public Prisoner(int numberOfThreads){
@@ -44,7 +44,13 @@ public class Prisoner {
         //print out the result.
         System.out.println(Bastille.getRandomElementFrom(macArray));
     }
-    
+
+    /**
+     * computes the total completion amount of all worker threads, combined
+     * @param threadNumber number of worker threads
+     * @param newCompletionAmount given thread's completion amount
+     * @return the sum of the weighted averages of each thread's completion amount
+     */
     public double updateCompletion(int threadNumber, double newCompletionAmount){
         this.threadCompletionAmounts[threadNumber] = newCompletionAmount;
         double returnVar = 0d;

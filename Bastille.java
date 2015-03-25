@@ -28,6 +28,8 @@ public class Bastille {
             //make them, and the last thread will pick up from there
             deploySoldiers(8);//divide namespace resolution into 8 threads
         } else {
+            //the file was generated on a previous run,
+            //we just need to pick a random value
             getRandomElementFrom(existingMacs);
             System.out.println(getRandomElementFrom(existingMacs));
         }
@@ -45,9 +47,9 @@ public class Bastille {
     }
 
     /**
-     * *
+     * 
      * @param input an array of strings conforming to "tmp*mac*"
-     * @return MAC address String array 
+     * @return MAC addresses String array, with colons between bytes
      */
     public static String[] formatMAC (String[] input){
         ArrayList<String> returnVar = new ArrayList<>();
@@ -58,12 +60,12 @@ public class Bastille {
                 StringBuilder returnBuilder = new StringBuilder();
                 String prefix = "";
                 int index = 0;
-                while (index < temp.length())
-                {
+                while (index < temp.length()) {
+                    //this loop was adapted from some stack overflow answer
+                    //because I was too lazy to figure out how to interleave characters
                     returnBuilder.append(prefix);
                     prefix = ":";
-                    returnBuilder.append(temp.substring(index,
-                            Math.min(index + 2, temp.length())));
+                    returnBuilder.append(temp.substring(index, Math.min(index + 2, temp.length())));
                     index += 2;
                 }
                 returnVar.add(returnBuilder.toString());
@@ -157,6 +159,7 @@ public class Bastille {
      */
     public static String getRandomElementFrom(String[] array){
         if(array == null) return null;
+        if(array.length == 0) return "";
         return array[(int) (Math.random()*array.length)];
     }
 }//end of class
