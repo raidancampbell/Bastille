@@ -12,7 +12,16 @@ import java.util.regex.Pattern;
  */
 public class Bastille {
     private static final String filename = "macs";
-    
+
+    /**
+     * begins execution.  Runtime is limited by DNS query restrictions.
+     *  starts with dividing the workload among 8 threads, who then resolve
+     *  their IP block into hostnames, and write their results to the 'Prisoner' object
+     *  Once finished, the hostnames will be parsed for MAC addresses, written to a file,
+     *  and a random MAC will be returned.  If execution has already occured, Bastille will
+     *  simply open the file and return a random MAC from the file.
+     * @param args *unused*
+     */
     public static void main(String[] args){
         String[] existingMacs = readFile();
         if(existingMacs == null) {//we haven't made them yet.
@@ -34,7 +43,12 @@ public class Bastille {
         for(String s: input) returnVar.append(String.format("%s\n", s));
         return returnVar.toString();
     }
-    
+
+    /**
+     * *
+     * @param input an array of strings conforming to "tmp*mac*"
+     * @return MAC address String array 
+     */
     public static String[] formatMAC (String[] input){
         ArrayList<String> returnVar = new ArrayList<>();
         
@@ -85,25 +99,39 @@ public class Bastille {
             Base64.Encoder encoder = Base64.getEncoder();
             encoder.encode(data);
             outputStream.write(data);
+            outputStream.close();
         } catch(Exception e){
             System.err.println("Error while writing to file '"+filename+"'!");
         }
         
     }
-    
+
+    /**
+     * creates and starts threadCount number of worker threads for nameserver resolution.
+     * @param threadCount number of worker threads to create.  256 is a hard maximum.
+     * @return Prisoner, the shared data used by the threads.
+     */
     private static Prisoner deploySoldiers(int threadCount){
+        if(threadCount<1) threadCount = Math.abs(threadCount);
+        if(threadCount>256) threadCount = 256;
         Prisoner sharedData = new Prisoner(threadCount);
         int width = 256 / threadCount;
         for(int i = 0; i < threadCount; i++){
-            int  LB = width*i;
-            int  UB = LB + width;
+            int  LB = width*i;//Lower Bound of IP space
+            int  UB = LB + width;//Upper Bound of IP space
             Soldier soldier = new Soldier(LB, UB, sharedData);
-            new Thread(soldier).start();
-            //soldier.run();//forks a thread into soldier to nslookup the IP space between LB and UB
+            new Thread(soldier).start();//protip: to actually use multithreading, you need to put it into a thread.
         }
         return sharedData;
     }//end of addSoldier
-    
+
+    /**
+     * reads the "macs" file, which is a hardcoded filename.
+     * base64 encoding is used to encode the file before writing, and is
+     * decoded on reading.  If you're capable of reading the source code, 
+     * you're capable of doing this yourself, and I don't need to hide this data from you
+     * @return the contents of the file, as a String array
+     */
     public static String[] readFile(){
         try {
             byte[] buffer = new byte[(int) new File(filename).length()];
@@ -121,7 +149,12 @@ public class Bastille {
         }
         return null;
     }
-    
+
+    /**
+     * get a random element from the given String array
+     * @param array array to choose a random element from
+     * @return a random element from the given array
+     */
     public static String getRandomElementFrom(String[] array){
         if(array == null) return null;
         return array[(int) (Math.random()*array.length)];
