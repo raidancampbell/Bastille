@@ -88,8 +88,8 @@ public class Soldier implements Runnable{
         apparently I can't think well enough to turn this
         into a percent complete.
          */
-        int range = thirdAddrUB - startLB;
-        int currentPosition = thirdAddrUB-thirdAddrLB;
+        double range = thirdAddrUB - startLB;
+        double currentPosition = thirdAddrLB - startLB;
         return currentPosition / range;
     }
 }
