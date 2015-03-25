@@ -9,11 +9,15 @@ import java.util.Arrays;
 public class Prisoner {
     private volatile ArrayList<String> macs;
     private int threadsRemaining;
+    private final double totalThreads;//holds an int, but rendered as double for fraction usage.
+    private double[] threadCompletionAmounts;
     
     //constructor.  Just feed me the number of threads, so I can know when we're done.
     public Prisoner(int numberOfThreads){
         this.threadsRemaining = numberOfThreads;
         macs = new ArrayList<>();
+        threadCompletionAmounts = new double[numberOfThreads];
+        totalThreads = numberOfThreads;
     }
 
     /**
@@ -39,5 +43,12 @@ public class Prisoner {
         Bastille.writeFile(Bastille.flatten(macArray));
         //print out the result.
         System.out.println(Bastille.getRandomElementFrom(macArray));
+    }
+    
+    public double updateCompletion(int threadNumber, double newCompletionAmount){
+        this.threadCompletionAmounts[threadNumber] = newCompletionAmount;
+        double returnVar = 0d;
+        for(Double d: threadCompletionAmounts) returnVar += (d/totalThreads);
+        return returnVar;
     }
 }

@@ -10,17 +10,20 @@ public class Soldier implements Runnable{
     private final int startLB;
     private int thirdAddrUB;
     final private Prisoner sharedData;
+    private final int threadNumber;
 
     /**
      * Constructor.  Gotta make me before you run me.
      * @param LB Lower Bound of third IP byte to lookup, as an integer
      * @param UB Upper Bound of third IP byte to lookup, as an integer
+     * @param threadNumber the unique index number of this thread
      * @param sharedData the shared data to write results to upon completion
      */
-    public Soldier(int LB, int UB, Prisoner sharedData){
+    public Soldier(int LB, int UB, int threadNumber, Prisoner sharedData){
         this.thirdAddrLB = LB;
         this.thirdAddrUB = UB;
         this.sharedData = sharedData;
+        this.threadNumber = threadNumber;
         this.startLB = LB;//copy of LB, because we change LB during execution.  Used to calculate percent completeness
     }
 
@@ -38,7 +41,10 @@ public class Soldier implements Runnable{
                 String lookupValue = nslookupIP(String.format("%s.%d.%d",CWRUBlock , thirdAddrLB, fourthAddr));
                 if(lookupValue !=null) Collections.addAll(returnVar, lookupValue);//ignore null values.
             }
-            System.out.println(percentComplete()*100+"% complete with resolutions on this thread.");
+            synchronized (sharedData){
+                double completionAmount = sharedData.updateCompletion(threadNumber, percentComplete());
+                System.out.println(completionAmount*100+"% complete with resolutions.");
+            }
         }
         //there should be an easier array<=>arrayList conversion technique
         String[] returnArr = returnVar.toArray(new String[returnVar.size()]);
@@ -81,13 +87,6 @@ public class Soldier implements Runnable{
      *          given as a double value between 0 and 1
      */
     private double percentComplete(){
-        //TODO: fix this.
-        /*
-        thirdAddrUB, and startLB are constant per thread.
-        thirdAddrLB is incremented up to thirdAddrUB.
-        apparently I can't think well enough to turn this
-        into a percent complete.
-         */
         double range = thirdAddrUB - startLB;
         double currentPosition = thirdAddrLB - startLB;
         return currentPosition / range;

@@ -97,7 +97,7 @@ public class Bastille {
             byte[] data = toWrite.getBytes();
             FileOutputStream outputStream = new FileOutputStream(filename);
             Base64.Encoder encoder = Base64.getEncoder();
-            encoder.encode(data);
+            data = encoder.encode(data);
             outputStream.write(data);
             outputStream.close();
         } catch(Exception e){
@@ -119,7 +119,7 @@ public class Bastille {
         for(int i = 0; i < threadCount; i++){
             int  LB = width*i;//Lower Bound of IP space
             int  UB = LB + width;//Upper Bound of IP space
-            Soldier soldier = new Soldier(LB, UB, sharedData);
+            Soldier soldier = new Soldier(LB, UB, i, sharedData);
             new Thread(soldier).start();//protip: to actually use multithreading, you need to put it into a thread.
         }
         return sharedData;
@@ -138,7 +138,7 @@ public class Bastille {
             BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
             int status = f.read(buffer);
             Base64.Decoder decoder = Base64.getDecoder();
-            decoder.decode(buffer);
+            buffer = decoder.decode(buffer);
             if(status == -1) throw new IOException("READ STATUS RETURNED -1");
             return new String(buffer).split("\\n");//newline split the stuff.
         } catch (FileNotFoundException e){
