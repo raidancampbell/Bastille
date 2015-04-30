@@ -16,3 +16,5 @@ https://its-serv2.case.edu/NetworkTools/IPDB/hostnameRequestFrame.html
 
 
 This is a proof-of-concept, and still provides a traceable connection through identification of the physical faceplate interface.
+
+[![Coverage Status](https://coveralls.io/repos/raidancampbell/Bastille/badge.svg)](https://coveralls.io/r/raidancampbell/Bastille)
