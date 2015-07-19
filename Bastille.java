@@ -139,6 +139,7 @@ public class Bastille {
             byte[] buffer = new byte[(int) new File(filename).length()];
             BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
             int status = f.read(buffer);
+            f.close();
             Base64.Decoder decoder = Base64.getDecoder();
             buffer = decoder.decode(buffer);
             if(status == -1) throw new IOException("READ STATUS RETURNED -1");
