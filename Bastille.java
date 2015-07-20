@@ -95,9 +95,8 @@ public class Bastille {
      * @param toWrite text to write
      */
     public static void writeFile(String toWrite){
-        try {
+        try (FileOutputStream outputStream = new FileOutputStream(filename) ) {
             byte[] data = toWrite.getBytes();
-            FileOutputStream outputStream = new FileOutputStream(filename);
             Base64.Encoder encoder = Base64.getEncoder();
             data = encoder.encode(data);
             outputStream.write(data);
@@ -105,7 +104,6 @@ public class Bastille {
         } catch(Exception e){
             System.err.println("Error while writing to file '"+filename+"'!");
         }
-        
     }
 
     /**
@@ -135,9 +133,8 @@ public class Bastille {
      * @return the contents of the file, as a String array
      */
     public static String[] readFile(){
-        try {
+        try (BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename) ) ) {
             byte[] buffer = new byte[(int) new File(filename).length()];
-            BufferedInputStream f = new BufferedInputStream(new FileInputStream(filename));
             int status = f.read(buffer);
             f.close();
             Base64.Decoder decoder = Base64.getDecoder();
