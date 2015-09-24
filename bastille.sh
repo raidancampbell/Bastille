@@ -65,6 +65,6 @@ loopthroughall() {
     done
 }
 
-echo "Scanning ${BASE}.0.0 to ${BASE}.255.255 with max ${CPUS} threads"
+echo "Scanning ${BASE}.0.0 to ${BASE}.255.255 with max ${CPUS} threads" >&2
 
 loopthroughall $1
