@@ -2,13 +2,6 @@
 
 BASE=129.22
 
-OUTFILE=$1
-
-if [[ $1 == "" ]]; then
-    echo "Provide the outfile as the first argument"
-    exit 1
-fi
-
 getoneip() {
     IP=$(dig -x $1 @8.8.8.8 | grep arpa | grep PTR | awk '{print $5}' | grep -i edu)
 
@@ -28,10 +21,36 @@ printip() {
     fi
 }
 
+processip1() {
+    printip $1 | grep tmp | awk '{print $2}' | sed 's/tmp//g' | sed 's/[.].*$//g'
+}
 
-for i in {0..255}; do
-    for j in {0..255}; do
-        printip ${BASE}.${i}.${j} >> $OUTFILE &
+processip2() {
+    out=""
+    for i in `processip1 $1 | fold -w2`; do
+        out=${out}:${i}
     done
-    wait
-done
+
+    if [[ $out == "" ]]; then
+        echo -n $out
+    else
+        echo $out | sed 's/^://'
+    fi
+}
+
+loopthroughall() {
+    for i in {0..255}; do
+        for j in {0..255}; do
+            TOTEST=${BASE}.${i}.${j}
+            if [[ $1 == "" ]]; then
+                processip2 $TOTEST &
+            fi
+            if [[ $1 == "full" ]]; then
+                printip $TOTEST
+            fi
+        done
+        wait
+    done
+}
+
+loopthroughall $1
