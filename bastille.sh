@@ -2,6 +2,10 @@
 
 BASE=129.22
 
+if [[ $CPUS == "" ]]; then
+    CPUS=8
+fi
+
 getoneip() {
     IP=$(dig -x $1 @8.8.8.8 | grep arpa | grep PTR | awk '{print $5}' | grep -i edu)
 
@@ -31,6 +35,8 @@ processip2() {
         out=${out}:${i}
     done
 
+    out=`echo $out | grep -E '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]'`
+
     if [[ $out == "" ]]; then
         echo -n $out
     else
@@ -40,17 +46,25 @@ processip2() {
 
 loopthroughall() {
     for i in {0..255}; do
+        c=-1
         for j in {0..255}; do
+            c=$((c+1))
             TOTEST=${BASE}.${i}.${j}
             if [[ $1 == "" ]]; then
                 processip2 $TOTEST &
             fi
             if [[ $1 == "full" ]]; then
-                printip $TOTEST
+                printip $TOTEST &
+            fi
+            if [[ $c == $CPUS ]]; then
+                wait
+                c=-1
             fi
         done
         wait
     done
 }
+
+echo "Scanning ${BASE}.0.0 to ${BASE}.255.255 with max ${CPUS} threads"
 
 loopthroughall $1
